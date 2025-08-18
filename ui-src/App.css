@@ -113,10 +113,24 @@
   flex: 1;
   position: relative;
   aspect-ratio: 1/1;
+}
 
-  canvas {
-    width: 100%;
-    height: 100%;
+.c-app__canvas-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  &.c-app__canvas-overlay--recording {
+    background: color-mix(in srgb, var(--color-bg-z0) 75%, transparent);
+  }
+
+  svg {
+    fill: var(--color-text-base);
+    width: 64px;
+    height: 64px;
   }
 }
 

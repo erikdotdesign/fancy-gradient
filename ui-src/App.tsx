@@ -9,11 +9,12 @@ const App = () => {
   const [colors, setColors] = useState(["#eb75b6", "#ddf3ff", "#6e3deb", "#c92f3c"]);
   const [playing, setPlaying] = useState(true);
   const [darkTop, setDarkTop] = useState(false);
+  const [recording, setRecording] = useState<boolean>(false);
   const gradient = useRef(new Gradient());
-  const cavasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const initGradient = (c = colors) => {
-    gradient.current.initGradient(`#${cavasRef.current?.id}`, c);
+    gradient.current.initGradient(`#${canvasRef.current?.id}`, c);
     regenerateGradient();
   };
 
@@ -66,6 +67,90 @@ const App = () => {
     setColors(newColors);
   };
 
+  const addFancyGradientVideo = async () => {
+    if (!canvasRef.current) return;
+
+    setRecording(true);
+
+    const canvas = canvasRef.current;
+
+    // Capture still frame
+    const stillImageDataUrl = canvas.toDataURL("image/png");
+
+    // Start recording video
+    const stream = canvas.captureStream(60);
+    const recordedChunks: BlobPart[] = [];
+    const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) recordedChunks.push(e.data);
+    };
+
+    const stopRecording = () =>
+      new Promise<Blob>((resolve) => {
+        recorder.onstop = () =>
+          resolve(new Blob(recordedChunks, { type: "video/webm" }));
+        recorder.stop();
+      });
+
+    recorder.start();
+
+    // Record for a fixed duration
+    await new Promise((res) => setTimeout(res, 5000));
+    const videoBlob = await stopRecording();
+
+    // console.log("Video size in MB:", videoBlob.size / (1024 * 1024));
+
+    // Dev preview
+    // const url = URL.createObjectURL(videoBlob);
+    // setVideoUrl(url);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const videoDataUrl = reader.result as string;
+
+      // Send both video and still image to the plugin
+      parent.postMessage(
+        {
+          pluginMessage: {
+            type: "add-fancy-gradient-video",
+            video: videoDataUrl,
+            image: stillImageDataUrl,
+          },
+        },
+        "*"
+      );
+    };
+    reader.readAsDataURL(videoBlob);
+
+    setRecording(false);
+  };
+
+  const addFancyGradientImage = async () => {
+    if (!canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const stillImageDataUrl = canvas.toDataURL("image/png");
+    
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: "add-fancy-gradient-image",
+          image: stillImageDataUrl,
+        },
+      },
+      "*"
+    );
+  };
+
+  const handleAddFancyGradient = () => {
+    if (playing) {
+      addFancyGradientVideo();
+    } else {
+      addFancyGradientImage();
+    }
+  };
+
   return (
     <main className="c-app">
       <section className="c-app__body">
@@ -99,8 +184,16 @@ const App = () => {
         </div>
         <div className="c-app__canvas">
           <canvas 
-            ref={cavasRef}
-            id="fancy-canvas" />
+            ref={canvasRef}
+            id="fancy-canvas"
+            className="c-app__canvas-overlay" />
+          {
+            recording
+            ? <div className="c-app__canvas-overlay c-app__canvas-overlay--recording">
+                <svg height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M217-212q-26 0-43-17t-17-43v-416q0-26 17-43t43-17h416q26 0 43 17t17 43v188l110-110v260L693-460v188q0 26-17 43t-43 17H217Zm0-28h416q14 0 23-9t9-23v-416q0-14-9-23t-23-9H217q-14 0-23 9t-9 23v416q0 14 9 23t23 9Zm-32 0v-480 480Z"/></svg>
+              </div>
+            : null
+          }
         </div>
         <div className="c-app__controls">
           <div>
@@ -131,7 +224,7 @@ const App = () => {
             </Button>
             <Button
               modifier={["primary", "icon"]}
-              onClick={() => {}}>
+              onClick={handleAddFancyGradient}>
               <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M453-140v-313H140v-54h313v-313h54v313h313v54H507v313h-54Z"/></svg>
             </Button>
           </div>

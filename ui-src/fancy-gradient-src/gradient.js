@@ -282,7 +282,7 @@ export class Gradient {
     requestAnimationFrame(this.animate);
   }
   init() {
-    this.initGradientColors(), this.initMesh(), this.setCanvasSize(1024, 600), this.minigl.render();
+    this.initGradientColors(), this.initMesh(), this.setCanvasSize(1024, 1024), this.minigl.render();
     window.addEventListener('resize', this.resize);
   }
   /*
