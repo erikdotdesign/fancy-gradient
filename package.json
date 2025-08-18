@@ -1,7 +1,7 @@
 {
-  "name": "fancy-gradients",
+  "name": "fancy-gradient",
   "version": "1.0.0",
-  "description": "fancy gradients",
+  "description": "fancy gradient",
   "main": "code.js",
   "scripts": {
     "build:main": "esbuild plugin-src/code.ts --bundle --outfile=dist/code.js --target=es2017",
