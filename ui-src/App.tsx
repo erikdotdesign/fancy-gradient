@@ -13,23 +13,19 @@ const App = () => {
   const cavasRef = useRef<HTMLCanvasElement>(null);
 
   const initGradient = (c = colors) => {
-    if (!cavasRef.current) return;
-    gradient.current.initGradient(`#${cavasRef.current.id}`, c);
+    gradient.current.initGradient(`#${cavasRef.current?.id}`, c);
+    regenerateGradient();
   };
 
   useEffect(() => {
-    if (!cavasRef.current) return;
     initGradient();
-    gradient?.current.changePosition(780); 
   }, []);
 
   useEffect(() => {
-    if (!gradient.current) return;
     gradient.current.changeGradientColors(colors);
   }, [colors]);
 
   const handlePlayPause = () => {
-    if (!gradient.current) return;
     if (playing) {
       gradient.current.pause();
     } else {
@@ -38,14 +34,15 @@ const App = () => {
     setPlaying(!playing);
   }
 
-  const regenerate = () => {
-    if (!gradient.current) return;
+  const regenerateGradient = () => {
     const value = Math.floor(Math.random() * 1000)
     gradient?.current.changePosition(value);
+    if (!playing) {
+      gradient.current.pause();
+    }
   };
 
   const handleDarkTop = () => {
-    if (!gradient.current) return;
     gradient.current.toggleDarkenTop();
     setDarkTop(!darkTop);
   };
@@ -58,7 +55,7 @@ const App = () => {
 
   const handleAddColor = () => {
     const lastColor = colors[colors.length - 1];
-    const newColors = [...colors, getNearbyHex(lastColor)];
+    const newColors = [...colors, getNearbyHex(lastColor, 100)];
     initGradient(newColors);
     setColors(newColors);
   };
@@ -118,7 +115,7 @@ const App = () => {
             </Button>
             <Button
               modifier={["icon"]}
-              onClick={regenerate}>
+              onClick={regenerateGradient}>
               <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M484-212q-112.23 0-190.11-77.84-77.89-77.84-77.89-190T293.89-670q77.88-78 190.11-78 72 0 134 35.5t98 98.5v-134h28v188H556v-28h142q-31-61-88-96.5T484-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h30q-26 85-96.5 136.5T484-212Z"/></svg>
             </Button>
           </div>

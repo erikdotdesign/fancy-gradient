@@ -136,26 +136,7 @@ export class Gradient {
       document.querySelectorAll('canvas').length < 1
         ? console.warn('DID NOT LOAD HERO STRIPE CANVAS')
         : ((this.minigl = new MiniGl(this.el, null, null, !0)), this.el && this.init());
-    /*
-          this.scrollObserver = await s.create(.1, !1),
-          this.scrollObserver.observe(this.el),
-          this.scrollObserver.onSeparate(() => {
-              window.removeEventListener("scroll", this.handleScroll), window.removeEventListener("mousedown", this.handleMouseDown), window.removeEventListener("mouseup", this.handleMouseUp), window.removeEventListener("keydown", this.handleKeyDown), this.isIntersecting = !1, this.conf.playing && this.pause()
-          }), 
-          this.scrollObserver.onIntersect(() => {
-              window.addEventListener("scroll", this.handleScroll), window.addEventListener("mousedown", this.handleMouseDown), window.addEventListener("mouseup", this.handleMouseUp), window.addEventListener("keydown", this.handleKeyDown), this.isIntersecting = !0, this.addIsLoadedClass(), this.play()
-          })*/
   }
-  disconnect() {
-    this.scrollObserver &&
-      (window.removeEventListener('scroll', this.handleScroll),
-      window.removeEventListener('mousedown', this.handleMouseDown),
-      window.removeEventListener('mouseup', this.handleMouseUp),
-      window.removeEventListener('keydown', this.handleKeyDown),
-      this.scrollObserver.disconnect()),
-      window.removeEventListener('resize', this.resize);
-  }
-
   setCanvasSize(width, height, initial = true) {
     (this.width = width),
       (this.height = height),
@@ -167,7 +148,6 @@ export class Gradient {
       this.mesh.geometry.setSize(this.width, this.height),
       (this.mesh.material.uniforms.u_shadow_power.value = this.width < 600 ? 5 : 6);
   }
-
   initMaterial() {
     this.uniforms = {
       u_time: new this.minigl.Uniform({
@@ -294,7 +274,6 @@ export class Gradient {
   hideGradientLegend() {
     (this.isGradientLegendVisible = !1), document.body.classList.remove('isGradientLegendVisible');
   }
-
   changePosition(val) {
     const newValue = val;
     this.t = 1253106 + newValue * 1000;
@@ -332,7 +311,6 @@ export class Gradient {
       .filter(Boolean)
       .map(normalizeColor);
   }
-
   changeGradientColors(colors) {
     if (!colors || !this.mesh || !this.mesh.material) return;
 
@@ -348,15 +326,12 @@ export class Gradient {
 
     this.minigl.render(); // immediately render the new colors
   }
-
   reGenerateCanvas() {
     this.minigl.render();
   }
-
   getGradientColors() {
     return this.inputColors;
   }
-
   toggleDarkenTop() {
     const uniform = this.mesh.material.uniforms.u_darken_top;
     if (!uniform) return;
