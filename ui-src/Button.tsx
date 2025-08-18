@@ -3,17 +3,20 @@ import './Button.css';
 
 const Button = ({
   children,
-  type,
-  icon,
+  modifier,
   ...props
 }: {
   children?: React.ReactNode;
-  type?: string;
-  icon?: boolean;
-} & React.ButtonHTMLAttributes) => {
+  modifier?: string | string[];
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+  const modifierClasses = Array.isArray(modifier)
+    ? modifier.map((m) => `c-button--${m}`).join(' ')
+    : modifier
+    ? `c-button--${modifier}`
+    : '';
   return (
     <button
-      className={`c-button ${type ? `c-button--${type}` : ""} ${icon ? `c-button--icon` : ""}`}
+      className={`c-button ${modifierClasses}`}
       {...props}>
       {children}
     </button>

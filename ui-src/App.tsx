@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { resizeImage } from "./helpers";
+import { getNearbyHex } from "./helpers";
 import Button from "./Button";
-import Control from "./Control";
 import ColorControl from "./ColorControl";
-import { Gradient } from "./fancy-source/gradient";
+import { Gradient } from "./fancy-gradient-src/gradient";
 import "./App.css";
 
 const App = () => {
@@ -11,19 +10,26 @@ const App = () => {
   const [playing, setPlaying] = useState(true);
   const [darkTop, setDarkTop] = useState(false);
   const gradient = useRef(new Gradient());
+  const cavasRef = useRef<HTMLCanvasElement>(null);
 
-  const canvasId = "fancy-canvas";
+  const initGradient = (c = colors) => {
+    if (!cavasRef.current) return;
+    gradient.current.initGradient(`#${cavasRef.current.id}`, c);
+  };
 
   useEffect(() => {
-    gradient.current.initGradient("#" + canvasId, colors);
+    if (!cavasRef.current) return;
+    initGradient();
     gradient?.current.changePosition(780); 
   }, []);
 
   useEffect(() => {
-    gradient.current.changeGradientColors(colors)
+    if (!gradient.current) return;
+    gradient.current.changeGradientColors(colors);
   }, [colors]);
 
   const handlePlayPause = () => {
+    if (!gradient.current) return;
     if (playing) {
       gradient.current.pause();
     } else {
@@ -33,68 +39,104 @@ const App = () => {
   }
 
   const regenerate = () => {
+    if (!gradient.current) return;
     const value = Math.floor(Math.random() * 1000)
     gradient?.current.changePosition(value);
   };
 
   const handleDarkTop = () => {
+    if (!gradient.current) return;
     gradient.current.toggleDarkenTop();
     setDarkTop(!darkTop);
+  };
+
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>, i: number) => {
+    setColors(
+      colors.map((c, ci) => i === ci ? e.target.value : c)
+    );
+  };
+
+  const handleAddColor = () => {
+    const lastColor = colors[colors.length - 1];
+    const newColors = [...colors, getNearbyHex(lastColor)];
+    initGradient(newColors);
+    setColors(newColors);
+  };
+
+  const handleRemoveColor = (i: number) => {
+    const newColors = colors.filter((c, ci) => i !== ci);
+    initGradient(newColors);
+    setColors(newColors);
   };
 
   return (
     <main className="c-app">
       <section className="c-app__body">
-        {/* <div className="c-app__logo">
-          fancy gradients
-        </div> */}
-        <div className="c-canvas">
-          <div className="c-canvas__controls">
-            <div>
-              {
-                colors.map((color, ci) => (
-                  <ColorControl
-                    small
-                    value={color}
-                    onChange={(e) => setColors(colors.map((c, i) => i === ci ? e.target.value : c))} />
-                ))
-              }
-            </div>
-            <div>
-              <Button
-                icon
-                onClick={handleDarkTop}>
-                {
-                  darkTop
-                  ? <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"/></svg>
-                  : <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M480-280q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"/></svg>
-                }
-              </Button>
-              <Button
-                icon
-                onClick={regenerate}>
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
-              </Button>
-              <Button
-                icon
-                onClick={handlePlayPause}>
-                {
-                  playing
-                  ? <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z"/></svg>
-                  : <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M320-200v-560l440 280-440 280Z"/></svg>
-                }
-              </Button>
-              <Button
-                type="primary"
-                icon
-                onClick={() => {}}>
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
-              </Button>
-            </div>
+        <div className="c-app__controls c-app__controls--colors">
+          <div>
+            {
+              colors.map((c, i) => (
+                <ColorControl
+                  icon
+                  containerAs="div"
+                  modifier={["stacked-icon"]}
+                  value={c}
+                  right={
+                    colors.length > 2
+                    ? <Button 
+                        modifier={["small", "icon", "bare"]}
+                        onClick={(() => handleRemoveColor(i))}>
+                        <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="m257.5-239-18-18.5 222-222.5-222-222.5 18-18.5L480-498.5 702.5-721l18 18.5-222 222.5 222 222.5-18 18.5L480-461.5 257.5-239Z"/></svg>
+                      </Button>
+                    : null
+                  }
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleColorChange(e, i)} />
+              ))
+            }
+            <Button 
+              modifier={["icon"]}
+              onClick={handleAddColor}>
+              <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M466-466H252v-28h214v-214h28v214h214v28H494v214h-28v-214Z"/></svg>
+            </Button>
           </div>
-          <div className="c-canvas__canvas">
-            <canvas 
-              id={canvasId} />
+        </div>
+        <div className="c-app__canvas">
+          <canvas 
+            ref={cavasRef}
+            id="fancy-canvas" />
+        </div>
+        <div className="c-app__controls">
+          <div>
+            <Button
+              modifier={["icon"]}
+              onClick={handleDarkTop}>
+              {
+                darkTop
+                ? <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M483-172q-128.33 0-218.17-89.83Q175-351.67 175-480q0-113 71.5-197.5T425-783q-14 28-22 59t-8 64q0 111.67 78.17 189.83Q551.33-392 663-392q33 0 64-8t58-22q-20 107-104.5 178.5T483-172Zm0-28q88 0 158-48.5T743-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T367-660q0-20 3-40t8-40q-78 32-126.5 102T203-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
+                : <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 28q-62 0-105-43t-43-105q0-62 43-105t105-43q62 0 105 43t43 105q0 62-43 105t-105 43ZM200-466H66v-28h134v28Zm694 0H760v-28h134v28ZM466-760v-134h28v134h-28Zm0 694v-134h28v134h-28ZM274-668l-82-80 19-21 81 81-18 20Zm475 477-81-81 18-20 82 80-19 21Zm-81-495 80-82 21 19-81 81-20-18ZM191-211l81-81 18 18-79 83-20-20Zm289-269Z"/></svg>
+              }
+            </Button>
+            <Button
+              modifier={["icon"]}
+              onClick={regenerate}>
+              <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M484-212q-112.23 0-190.11-77.84-77.89-77.84-77.89-190T293.89-670q77.88-78 190.11-78 72 0 134 35.5t98 98.5v-134h28v188H556v-28h142q-31-61-88-96.5T484-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h30q-26 85-96.5 136.5T484-212Z"/></svg>
+            </Button>
+          </div>
+          <div>
+            <Button
+              modifier={["icon"]}
+              onClick={handlePlayPause}>
+              {
+                playing
+                ? <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M546-252v-456h162v456H546Zm-294 0v-456h162v456H252Zm322-28h106v-400H574v400Zm-294 0h106v-400H280v400Zm0-400v400-400Zm294 0v400-400Z"/></svg>
+                : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 12L7 19V5L18 12ZM7.66016 17.7969L16.7705 12L7.66016 6.20215V17.7969Z"/></svg>
+              }
+            </Button>
+            <Button
+              modifier={["primary", "icon"]}
+              onClick={() => {}}>
+              <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M453-140v-313H140v-54h313v-313h54v313h313v54H507v313h-54Z"/></svg>
+            </Button>
           </div>
         </div>
       </section>

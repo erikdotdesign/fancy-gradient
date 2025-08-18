@@ -4,6 +4,8 @@ import './Control.css';
 
 export type ControlProps =  React.InputHTMLAttributes<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> & {
   as?: "input" | "select" | "textarea";
+  containerAs?: "label" | "div";
+  containerProps?: any; 
   children?: React.ReactNode;
   inputRef?: any;
   label?: string;
@@ -20,6 +22,8 @@ const Control = ({
   inputRef,
   label,
   as: Tag = 'input',
+  containerAs: ContainerTag = "label",
+  containerProps,
   children,
   modifier,
   replacement,
@@ -37,7 +41,7 @@ const Control = ({
     : '';
 
   return (
-    <label className={`c-control ${modifierClasses} ${props.type ? `c-control--${props.type}` : ""} ${icon ? `c-control--icon` : ""}`}>
+    <ContainerTag className={`c-control ${modifierClasses} ${props.type ? `c-control--${props.type}` : ""} ${icon ? `c-control--icon` : ""}`} {...containerProps}>
       {
         label
         ? <div className="c-control__label">
@@ -53,13 +57,13 @@ const Control = ({
             </div>
           : null
         }
-        { replacement }
         <Tag
           ref={inputRef}
           className={`c-control__input ${right ? "c-control__input--right" : ""} ${left ? "c-control__input--left" : ""}`}
           { ...props }>
           {children}
         </Tag>
+        { replacement }
         {
           left
           ? <ControlAddon 
@@ -84,7 +88,7 @@ const Control = ({
           : null
         }
       </div>
-    </label>
+    </ContainerTag>
   )
 }
 

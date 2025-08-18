@@ -42,9 +42,47 @@
       height: 40px;
       padding: 0;
     }
-    &:hover {
+    /* &:hover {
       svg {
         fill: var(--color-text-light);
+      }
+    } */
+  }
+
+  &.c-control--stacked-icon {
+    .c-control__input {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+    }
+
+    &:hover {
+      .c-control__addon {
+        &.c-control__addon--right {
+          display: block;
+        }
+      }
+    }
+
+    .c-control__addon {
+      width: 20px;
+      height: 20px;
+
+      &.c-control__addon--right {
+        right: auto;
+        left: 125%;
+        transform: translateX(-50%);
+        display: none;
+      }
+
+      &.c-control__addon--left {
+        right: auto;
+        top: 100%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       }
     }
   }
@@ -55,14 +93,14 @@
     align-items: center;
     justify-content: center;
     padding: 8px 8px 8px 12px;
-    box-shadow: 0 0 0 2px inset var(--color-border-z2);
+    box-shadow: 0 0 0 1px inset var(--color-border-z2);
     gap: 0;
 
     &:hover {
-      box-shadow: 0 0 0 2px inset var(--color-border-z3);
+      box-shadow: 0 0 0 1px inset var(--color-border-z3);
 
       .c-control__checkmark {
-        box-shadow: 0 0 0 2px inset var(--color-border-z3);
+        box-shadow: 0 0 0 1px inset var(--color-border-z3);
       }
     }
     
@@ -247,7 +285,7 @@
   display: block;
   font-family: var(--font-family);
   background: var(--color-bg-z0);
-  box-shadow: 0 0 0 2px inset var(--color-border-z2);
+  box-shadow: 0 0 0 1px inset var(--color-border-z2);
   line-height: 16px;
   font-size: 12px;
   width: 100%;
@@ -261,6 +299,15 @@
   white-space: no-wrap;
   text-overflow: ellipsis;
 
+  &.c-control__input--color {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: none;
+    box-shadow: none;
+  }
+
   &.c-control__input--left {
     padding-left: var(--control-addon-size);
   }
@@ -270,11 +317,13 @@
   }
 
   &:hover {
-    box-shadow: 0 0 0 2px inset var(--color-border-z3);
+    box-shadow: 0 0 0 1px inset var(--color-border-z3);
+    background: var(--color-bg-z1);
   }
 
   &:focus {
-    box-shadow: 0 0 0 2px inset var(--color-primary);
+    box-shadow: 0 0 0 1px inset var(--color-primary);
+    background: var(--color-bg-z1);
   }
 
   &:is(select) {
@@ -286,12 +335,8 @@
   }
 
   &:is(input[type="color"]) {
-    background: none;
-    position: absolute;
-    width: 100%;
-    height: 100%;
     cursor: pointer;
-
+    
     &::-webkit-color-swatch {
       display: none;
     }
@@ -321,14 +366,6 @@
   justify-content: center;
   cursor: pointer;
 
-  svg {
-    fill: var(--color-text-lighter);
-
-    &:hover {
-      fill: var(--color-text-light);
-    }
-  }
-
   span {
     font-family: var(--font-family);
     color: var(--color-text-light);
@@ -336,6 +373,14 @@
     font-size: 10px;
     font-weight: bold;
     text-transform: uppercase;
+
+    svg {
+      fill: var(--color-text-lighter);
+
+      &:hover {
+        fill: var(--color-text-light);
+      }
+    }
   }
 
   &.c-control__addon--right {
@@ -357,7 +402,7 @@
   width: 24px;
   background-color: var(--color-bg-z0);
   border-radius: var(--border-radius);
-  box-shadow: 0 0 0 2px inset var(--color-border-z2);
+  box-shadow: 0 0 0 1px inset var(--color-border-z2);
   pointer-events: none;
   cursor: pointer;
 }
