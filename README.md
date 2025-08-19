@@ -24,7 +24,7 @@
 ## Exports
 
 - **Still Image:** 1024×1024 PNG  
-- **Video:** 1024×1024 MP4 (5s or 10s loop)  
+- **Video:** 1024×1024 WebM (5s or 10s loop)  
 
 ## License
 
