@@ -5,8 +5,17 @@ import ColorControl from "./ColorControl";
 import { Gradient } from "./fancy-gradient-src/gradient";
 import "./App.css";
 
+const COLOR_PALETTES = [
+  ["#eb75b6", "#ddf3ff", "#6e3deb", "#c92f3c"],
+  ["#FF5F7E", "#FFBD3C", "#39E991", "#3C91FF"],
+  ["#FF0054", "#FF7F11", "#00F5D4", "#9B5DE5"],
+  ["#FF595E", "#FFCA3A", "#8AC926", "#1982C4"],
+  ["#FF4C4C", "#FF9A00", "#FF36F4", "#38B6FF"],
+  ["#FF00FF", "#00FFFF", "#FFFF00", "#FF007C"]
+];
+
 const App = () => {
-  const [colors, setColors] = useState(["#eb75b6", "#ddf3ff", "#6e3deb", "#c92f3c"]);
+  const [colors, setColors] = useState(COLOR_PALETTES[5]);
   const [playing, setPlaying] = useState(true);
   const [darkTop, setDarkTop] = useState(false);
   const [vidLength, setVidLength] = useState<5000 | 10000>(5000);
@@ -20,9 +29,44 @@ const App = () => {
     regenerateGradient();
   };
 
+  const handleCacheInit = (cache: { colors: string[]; darkTop: boolean; playing: boolean; }) => {
+    initGradient(cache.colors);
+    if (cache.darkTop) {
+      gradient.current.toggleDarkenTop();
+    }
+    if (!cache.playing) {
+      gradient.current.pause();
+    }
+  };
+
   useEffect(() => {
-    initGradient();
+    parent.postMessage({ pluginMessage: { type: "load-storage", key: "cache" } }, "*");
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (msg.type === "storage-loaded") {
+        if (msg.key === "cache" && msg.value) {
+          setColors(msg.value.colors);
+          setDarkTop(msg.value.darkTop);
+          setVidLength(msg.value.vidLength);
+          setPlaying(msg.value.playing);
+          handleCacheInit(msg.value);
+        } else {
+          initGradient();
+        }
+      }
+    };
   }, []);
+
+  useEffect(() => {
+    parent.postMessage({
+      pluginMessage: { type: "save-storage", key: "cache", value: {
+        colors,
+        darkTop,
+        vidLength,
+        playing
+      }},
+    }, "*");
+  }, [colors, darkTop, vidLength, playing]);
 
   useEffect(() => {
     gradient.current.changeGradientColors(colors);

@@ -1,59 +1,31 @@
-# Kaleidoscope
+# Fancy Gradient
 
-Create mesmerizing kaleidoscope videos right inside Figma.
+**Animated mesh gradient generator** for Figma — export smooth, colorful gradients as still images or looping videos.  
 
-Turn any selection or uploaded image into a looping kaleidoscope animation — perfect for backgrounds, fills, or creative explorations.
-
-![Screenshot](kaleidoscope-cover.png)
+![cover](fancy-gradient-cover.png)  
 
 ## Features
 
-- **5 second kaleidoscope videos**  
-  Export looping animations (Pro only).  
-  Free plan outputs a single kaleidoscope still image.  
+- **2 → unlimited colors** — build subtle blends or vibrant explosions  
+- **Animated video export** — render **5s** or **10s** seamless loops  
+- **Still image export** — save **1024×1024 PNGs**  
+- **Regenerate button** — instantly shuffle into a fresh gradient  
+- **Darken top button** — add depth and contrast to the mesh  
+- **Theme support** — adapts to Figma’s light & dark UI themes  
+- **Dynamic sizing** — auto-fits to your selection, or the viewport if none selected  
 
-- **Customizable controls**  
-  - Slice count  
-  - Speed  
-  - Zoom  
-  - Rotation  
+## Getting Started
 
-- **Live kaleidoscope preview in UI**  
-  Instantly see how your animation will look before exporting.  
+1. Open Figma → go to **Plugins → Browse Plugins in Community**  
+2. Search for **“fancy-gradient”**  
+3. Click **Install**  
+4. Run from the **Plugins** menu and start generating
 
-- **Upload or selection input**  
-  - Upload an image directly from your computer  
-  - Or use the **selection button** to turn your Figma selection into a kaleidoscope animation  
+## Exports
 
-- **Adaptive video scaling**  
-  Exported videos scale automatically to fit your **selection** or the **viewport size**.  
-
-- **Light & dark theme support**  
-  Seamlessly adapts to your Figma theme.  
-
-## Usage
-
-1. Select any layer/s **or** upload your own image.  
-2. Adjust **slice, speed, zoom, rotation** until you get the look you want.  
-3. Preview your kaleidoscope live in the plugin UI.  
-4. Export as either:  
-   - **Video (5s loop)** → usable as a fill in Figma (Pro only).  
-   - **Still image** → available to all users.  
-
-## Installation
-
-1. Open the **Figma Community**.  
-2. Search for **Kaleidoscope**.  
-3. Click **Install**.  
-
-Once installed, you’ll find it under **Plugins → Kaleidoscope** in Figma.
-
-## Notes
-
-- Video fills in Figma are limited to **100MB max**.  
-- Recommended canvas/video size is **~600px** for balance between quality and file size.  
-- Pro plan unlocks export to video.  
+- **Still Image:** 1024×1024 PNG  
+- **Video:** 1024×1024 MP4 (5s or 10s loop)  
 
 ## License
 
-MIT © 2025
+MIT
