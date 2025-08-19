@@ -61,12 +61,21 @@
 }
 
 :root {
-  --font-family: "Amatic SC", sans-serif;
-  --font-family-headline: "Amatic SC", sans-serif;
+  --font-family: "IBM Plex Mono", sans-serif;
+  --font-family-headline: "IBM Plex Mono", sans-serif;
   --font-family-mono: "IBM Plex Mono", monospace;
   --border-radius: 0;
   --control-addon-size: 40px;
-  --anim-params: 6s linear infinite alternate;
+  --anim-params: 2.5s linear infinite alternate;
+}
+
+@keyframes rotateAnim {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .c-app {
@@ -93,19 +102,19 @@
   max-height: 100vh;
   padding: 0 24px;
 
-  div {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-
-    .c-control {
-      padding-top: 0;
-    }
-  }
-
   &.c-app__controls--colors {
     overflow-x: hidden;
     overflow-y: scroll;
+  }
+}
+
+.c-app__control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .c-control {
+    padding-top: 0;
   }
 }
 
@@ -124,13 +133,31 @@
   height: 100%;
 
   &.c-app__canvas-overlay--recording {
-    background: color-mix(in srgb, var(--color-bg-z0) 75%, transparent);
-  }
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 88px;
+      height: 88px;
+      background: color-mix(in srgb, var(--color-bg-z0) 75%, transparent);
 
-  svg {
-    fill: var(--color-text-base);
-    width: 64px;
-    height: 64px;
+      div {
+        position: relative;
+        overflow: hidden;
+        width: 24px;
+        height: 24px;
+
+        &:before {
+          content: "";
+          position: absolute;
+          display: block;
+          width: 32px;
+          height: 32px;
+          background: linear-gradient(to right, var(--color-red), var(--color-purple));
+          animation: rotateAnim 5s linear infinite;
+        }
+      }
+    }
   }
 }
 

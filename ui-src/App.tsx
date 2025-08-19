@@ -9,6 +9,8 @@ const App = () => {
   const [colors, setColors] = useState(["#eb75b6", "#ddf3ff", "#6e3deb", "#c92f3c"]);
   const [playing, setPlaying] = useState(true);
   const [darkTop, setDarkTop] = useState(false);
+  const [vidLength, setVidLength] = useState<5000 | 10000>(5000);
+  // const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [recording, setRecording] = useState<boolean>(false);
   const gradient = useRef(new Gradient());
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -67,6 +69,12 @@ const App = () => {
     setColors(newColors);
   };
 
+  const handleVideoLength = (value: 5000 | 10000) => {
+    if (value !== vidLength) {
+      setVidLength(value);
+    }
+  };
+
   const addFancyGradientVideo = async () => {
     if (!canvasRef.current) return;
 
@@ -96,7 +104,7 @@ const App = () => {
     recorder.start();
 
     // Record for a fixed duration
-    await new Promise((res) => setTimeout(res, 5000));
+    await new Promise((res) => setTimeout(res, vidLength));
     const videoBlob = await stopRecording();
 
     // console.log("Video size in MB:", videoBlob.size / (1024 * 1024));
@@ -155,10 +163,11 @@ const App = () => {
     <main className="c-app">
       <section className="c-app__body">
         <div className="c-app__controls c-app__controls--colors">
-          <div>
+          <div className="c-app__control-group">
             {
               colors.map((c, i) => (
                 <ColorControl
+                  disabled={recording}
                   icon
                   containerAs="div"
                   modifier={["stacked-icon"]}
@@ -167,7 +176,8 @@ const App = () => {
                     colors.length > 2
                     ? <Button 
                         modifier={["small", "icon", "bare"]}
-                        onClick={(() => handleRemoveColor(i))}>
+                        onClick={(() => handleRemoveColor(i))}
+                        disabled={recording}>
                         <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="m257.5-239-18-18.5 222-222.5-222-222.5 18-18.5L480-498.5 702.5-721l18 18.5-222 222.5 222 222.5-18 18.5L480-461.5 257.5-239Z"/></svg>
                       </Button>
                     : null
@@ -177,11 +187,18 @@ const App = () => {
             }
             <Button 
               modifier={["icon"]}
-              onClick={handleAddColor}>
+              onClick={handleAddColor}
+              disabled={recording}>
               <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M466-466H252v-28h214v-214h28v214h214v28H494v214h-28v-214Z"/></svg>
             </Button>
           </div>
         </div>
+        {/* <video 
+          className="c-app__video-preview"
+          src={videoUrl} 
+          controls 
+          autoPlay 
+          loop /> */}
         <div className="c-app__canvas">
           <canvas 
             ref={canvasRef}
@@ -190,16 +207,19 @@ const App = () => {
           {
             recording
             ? <div className="c-app__canvas-overlay c-app__canvas-overlay--recording">
-                <svg height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M217-212q-26 0-43-17t-17-43v-416q0-26 17-43t43-17h416q26 0 43 17t17 43v188l110-110v260L693-460v188q0 26-17 43t-43 17H217Zm0-28h416q14 0 23-9t9-23v-416q0-14-9-23t-23-9H217q-14 0-23 9t-9 23v416q0 14 9 23t23 9Zm-32 0v-480 480Z"/></svg>
+                <div>
+                  <div />
+                </div>
               </div>
             : null
           }
         </div>
         <div className="c-app__controls">
-          <div>
+          <div className="c-app__control-group">
             <Button
               modifier={["icon"]}
-              onClick={handleDarkTop}>
+              onClick={handleDarkTop}
+              disabled={recording}>
               {
                 darkTop
                 ? <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M483-172q-128.33 0-218.17-89.83Q175-351.67 175-480q0-113 71.5-197.5T425-783q-14 28-22 59t-8 64q0 111.67 78.17 189.83Q551.33-392 663-392q33 0 64-8t58-22q-20 107-104.5 178.5T483-172Zm0-28q88 0 158-48.5T743-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T367-660q0-20 3-40t8-40q-78 32-126.5 102T203-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
@@ -208,14 +228,34 @@ const App = () => {
             </Button>
             <Button
               modifier={["icon"]}
-              onClick={regenerateGradient}>
+              onClick={regenerateGradient}
+              disabled={recording}>
               <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M484-212q-112.23 0-190.11-77.84-77.89-77.84-77.89-190T293.89-670q77.88-78 190.11-78 72 0 134 35.5t98 98.5v-134h28v188H556v-28h142q-31-61-88-96.5T484-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h30q-26 85-96.5 136.5T484-212Z"/></svg>
             </Button>
           </div>
-          <div>
+          <div className="c-app__control-group">
+            {
+              playing
+              ? <div className="c-button-group">
+                  <Button 
+                    onClick={() => handleVideoLength(5000)}
+                    modifier={["icon", vidLength === 5000 ? "radio" : ""]}
+                    disabled={recording}>
+                    5s
+                  </Button>
+                  <Button 
+                    onClick={() => handleVideoLength(10000)}
+                    modifier={["icon", vidLength === 10000 ? "radio" : ""]}
+                    disabled={recording}>
+                    10s
+                  </Button>
+                </div>
+              : null
+            }
             <Button
               modifier={["icon"]}
-              onClick={handlePlayPause}>
+              onClick={handlePlayPause}
+              disabled={recording}>
               {
                 playing
                 ? <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M546-252v-456h162v456H546Zm-294 0v-456h162v456H252Zm322-28h106v-400H574v400Zm-294 0h106v-400H280v400Zm0-400v400-400Zm294 0v400-400Z"/></svg>
@@ -224,8 +264,13 @@ const App = () => {
             </Button>
             <Button
               modifier={["primary", "icon"]}
-              onClick={handleAddFancyGradient}>
-              <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M453-140v-313H140v-54h313v-313h54v313h313v54H507v313h-54Z"/></svg>
+              onClick={handleAddFancyGradient}
+              disabled={recording}>
+              {
+                recording
+                ? <svg height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M217-212q-26 0-43-17t-17-43v-416q0-26 17-43t43-17h416q26 0 43 17t17 43v188l110-110v260L693-460v188q0 26-17 43t-43 17H217Zm0-28h416q14 0 23-9t9-23v-416q0-14-9-23t-23-9H217q-14 0-23 9t-9 23v416q0 14 9 23t23 9Zm-32 0v-480 480Z"/></svg>
+                : <svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M453-140v-313H140v-54h313v-313h54v313h313v54H507v313h-54Z"/></svg>
+              }
             </Button>
           </div>
         </div>

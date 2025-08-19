@@ -355,6 +355,10 @@
       opacity: 0;
     }
   }
+
+  &:disabled {
+    cursor: not-allowed !important;
+  }
 }
 
 .c-control__addon {

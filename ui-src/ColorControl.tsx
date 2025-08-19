@@ -8,8 +8,8 @@ const ColorControl = ({
 } & ControlProps) => {
   const colorIcon = (
     <div style={{
-      width: 24,
-      height: 24,
+      width: "100%",
+      height: "100%",
       background: props.value as string,
       cursor: 'pointer'
     }} />
