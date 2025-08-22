@@ -7,7 +7,7 @@
 ## Features
 
 - **2 → unlimited colors** — build subtle blends or vibrant explosions  
-- **Animated video export** — render **5s** or **10s** seamless loops  
+- **Animated video export** — render **15s**, **30s**, or **60s** seamless loops  
 - **Still image export** — save **1024×1024 PNGs**  
 - **Regenerate button** — instantly shuffle into a fresh gradient  
 - **Darken top button** — add depth and contrast to the mesh  
@@ -24,7 +24,7 @@
 ## Exports
 
 - **Still Image:** 1024×1024 PNG  
-- **Video:** 1024×1024 WebM (5s or 10s loop)  
+- **Video:** 1024×1024 WebM (15s, 30s, or 60s loop)  
 
 ## License
 

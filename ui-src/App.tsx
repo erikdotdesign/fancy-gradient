@@ -18,7 +18,7 @@ const App = () => {
   const [colors, setColors] = useState(COLOR_PALETTES[5]);
   const [playing, setPlaying] = useState(true);
   const [darkTop, setDarkTop] = useState(false);
-  const [vidLength, setVidLength] = useState<5000 | 10000>(5000);
+  const [vidLength, setVidLength] = useState<15000 | 30000 | 60000>(15000);
   // const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [recording, setRecording] = useState<boolean>(false);
   const gradient = useRef(new Gradient());
@@ -47,9 +47,14 @@ const App = () => {
         if (msg.key === "cache" && msg.value) {
           setColors(msg.value.colors);
           setDarkTop(msg.value.darkTop);
-          setVidLength(msg.value.vidLength);
           setPlaying(msg.value.playing);
           handleCacheInit(msg.value);
+          // handle old cache values
+          if (msg.value.vidLength === 5000 || msg.value.vidLength === 10000) {
+            setVidLength(15000);
+          } else {
+            setVidLength(msg.value.vidLength);
+          }
         } else {
           initGradient();
         }
@@ -113,7 +118,7 @@ const App = () => {
     setColors(newColors);
   };
 
-  const handleVideoLength = (value: 5000 | 10000) => {
+  const handleVideoLength = (value: 15000 | 30000 | 60000) => {
     if (value !== vidLength) {
       setVidLength(value);
     }
@@ -282,16 +287,22 @@ const App = () => {
               playing
               ? <div className="c-button-group">
                   <Button 
-                    onClick={() => handleVideoLength(5000)}
-                    modifier={["icon", vidLength === 5000 ? "radio" : ""]}
+                    onClick={() => handleVideoLength(15000)}
+                    modifier={["icon", vidLength === 15000 ? "radio" : ""]}
                     disabled={recording}>
-                    5s
+                    15s
                   </Button>
                   <Button 
-                    onClick={() => handleVideoLength(10000)}
-                    modifier={["icon", vidLength === 10000 ? "radio" : ""]}
+                    onClick={() => handleVideoLength(30000)}
+                    modifier={["icon", vidLength === 30000 ? "radio" : ""]}
                     disabled={recording}>
-                    10s
+                    30s
+                  </Button>
+                  <Button 
+                    onClick={() => handleVideoLength(60000)}
+                    modifier={["icon", vidLength === 60000 ? "radio" : ""]}
+                    disabled={recording}>
+                    60s
                   </Button>
                 </div>
               : null

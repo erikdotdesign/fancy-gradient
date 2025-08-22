@@ -11,7 +11,7 @@ const loadFromStorage = async (key: string) => {
   figma.ui.postMessage({ type: "storage-loaded", key, value });
 };
 
-const addImage = async (img: string) => {
+const addImage = async (img: string, disclaimer: boolean = false) => {
   // Fallback to image
   const base64 = img.split(",")[1];
   const data = figma.base64Decode(base64);
@@ -22,6 +22,11 @@ const addImage = async (img: string) => {
   node.name = "Fancy Gradient";
   scaleAndPositionNode(node, 1, 1024);
   figma.currentPage.selection = [node];
+  if (disclaimer) {
+    figma.notify("🌈 Image added (a Figma pro plan is required for video 😢)");
+  } else {
+    figma.notify("🌈 Image added");
+  }
 };
 
 const addVideoOrImage = async (msg: { video: string; image: string }) => {
@@ -36,10 +41,10 @@ const addVideoOrImage = async (msg: { video: string; image: string }) => {
     node.name = "Fancy Gradient";
     scaleAndPositionNode(node, 1, 1024);
     figma.currentPage.selection = [node];
+    figma.notify("🌈 Video added");
   } catch {
     // Fallback to image
-    addImage(msg.image);
-    figma.notify("A Figma pro plan is required for video 😢");
+    addImage(msg.image, true);
   }
 };
 
